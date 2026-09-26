@@ -1,0 +1,264 @@
+% !!! GENERATED FILE: edit templates/cv.tex and data/*.yml, then run `python build.py --pdf`.
+<# Jinja template with custom delimiters (see make_env in build.py); `r` is the LaTeX renderer. #>
+<% set updated = profile.updated ~ '' %>
+\documentclass[11pt]{article}
+\usepackage[margin=0.7in]{geometry}
+\usepackage{booktabs}
+\usepackage{comment}
+\PassOptionsToPackage{hyphens}{url}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\urlstyle{same}
+\usepackage[shortlabels]{enumitem}
+\usepackage{longtable}
+\linespread{0.95}
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{0pt}
+
+\usepackage{hyperxmp}
+\hypersetup{
+  pdftitle   = {Steinmetz CV << updated >>},
+  pdfauthor  = {Andrew J. Steinmetz},
+  pdfsubject = {Curriculum Vitae},
+  pdfkeywords = {
+    Physics, Spin Dynamics, Magnetism, Neutrinos, Relativistic Quantum Mechanics, Quark-Gluon Plasma, Curriculum Vitae, Andrew Steinmetz
+  },
+  pdfproducer = {LaTeX with pdfTeX},
+  pdfcreator  = {Andrew J. Steinmetz},
+  colorlinks = true,
+  urlcolor   = blue,
+  linkcolor  = blue
+}
+
+\begin{document}
+
+\pdfbookmark[0]{<< profile.name >>, << profile.credential >> -- Curriculum Vitae}{cv-top}
+
+\begin{center}
+    {\Large\textbf{<< profile.name >>, << profile.credential >>}}\\[0.5em]
+    {\large Curriculum Vitae -- Last Updated << r.date_long(updated) >>}
+\end{center}
+
+{\normalsize
+\begin{center}
+    \begin{tabular}{@{}p{2.0cm} p{5.5cm} p{2.0cm} p{5.5cm}@{}}
+        \textbf{Email:} & \href{mailto:<< profile.email >>}{<< profile.email >>} &
+        \textbf{Website:} & \href{<< profile.website >>}{<< profile.website >>} \\
+        \textbf{Phone:} & << profile.phone >> &
+        \textbf{ORCID:} & \href{https://orcid.org/<< profile.orcid >>}{<< profile.orcid >>} \\
+    \end{tabular}
+\end{center}
+}
+
+\medskip
+
+
+\pdfbookmark[1]{Employment}{employment}
+{\Large\textbf{Employment}}
+
+{\normalsize
+\begin{tabular}{@{}p{3.8cm} p{4.4cm} p{5.3cm} p{3.0cm}@{}}
+    \toprule
+    \textbf{Position Title} & \textbf{Department} & \textbf{Institution} & \textbf{Dates} \\
+    \midrule
+<% for e in employment %>
+    << r.text(e.title) >><< r.fn(e.footnotes) if e.footnotes is defined >> & << r.text(e.department_short | default(e.department)) >> & << r.text(e.institution) >> & {\small << r.span(e.start, e.get('end'), r.mon_year) >>} \\
+<% endfor %>
+    \bottomrule
+\end{tabular}
+}
+
+<< r.fnlist() >>
+
+\medskip
+
+\pdfbookmark[1]{Education}{education}
+{\Large\textbf{Education}}
+
+{\normalsize
+\begin{tabular}{@{}p{2.8cm} p{5.0cm} p{5.5cm} p{3.2cm}@{}}
+    \toprule
+    \textbf{Degree} & \textbf{Field} & \textbf{Institution} & \textbf{Dates} \\
+    \midrule
+<% for e in education %>
+    << e.degree >> & << r.text(e.field) >> & << r.text(e.institution) >><< r.fn(e.footnotes) if e.footnotes is defined >> & << r.mon_year(e.date) >> \\
+<% endfor %>
+    \bottomrule
+\end{tabular}
+}
+
+<< r.fnlist() >>
+
+\medskip
+
+\pdfbookmark[1]{Research Interests}{research-interests}
+{\Large\textbf{Research Interests}}
+
+\begin{itemize}[leftmargin=*,nosep]
+<% for ri in profile.research_interests %>
+    \item \textbf{<< r.text(ri.label) >>:} << r.text(ri.text) >>
+<% endfor %>
+\end{itemize}
+
+\medskip
+
+<% set diss = pubs.dissertation[0] %>
+\pdfbookmark[1]{Dissertation}{dissertation}
+{\Large\textbf{Dissertation}}
+
+\textbf{Title:} << r.text(diss.title) >>\\[0.3em]
+\textbf{Committee:} <% for c in diss.committee %>Prof.~<< r.esc(c.name) >>~(<< c.role >>)<< ", " if not loop.last >><% endfor %>\\[0.3em]
+\textbf{Identifiers:} << r.pub_ids(diss) | join(', ') >>\\[0.3em]
+\textbf{Presentation:} << r.ident(diss.presentation_doi, 'https://doi.org/' ~ diss.presentation_doi) >>
+
+\noindent\rule{\linewidth}{1.0pt}
+
+\pdfbookmark[1]{Publications}{publications}
+{\Large\textbf{Publications}}
+
+Citations = << profile.metrics.citations >>; h-index = << profile.metrics.h_index >> (\href{<< profile.links.scholar >>}{<< profile.metrics.source >>}, << r.mon_year(profile.metrics.as_of) >>). See also \href{<< profile.links.inspire >>}{INSPIRE-HEP} and \href{<< profile.links.arxiv >>}{arXiv}.
+
+<% macro publist(title, bookmark, items) %>
+\pdfbookmark[2]{<< title | replace('\\&', 'and') >>}{<< bookmark >>}
+{\large\textbf{<< title >>}}
+
+\begin{enumerate}[leftmargin=*,nosep]
+<% for p in items %>
+    \item << r.cite(p) >>
+<% endfor %>
+\end{enumerate}
+<% endmacro %>
+<< publist('Peer-Reviewed Journal Articles', 'peer-reviewed-journal-articles', pubs.journal) >>
+\medskip
+
+<< publist('Book Chapters \\& Review Articles', 'book-chapters-review-articles', pubs.chapter) >>
+\medskip
+
+<< publist('Institutional \\& Technical Reports', 'institutional-technical-reports', pubs.report) >>
+\medskip
+
+<< publist('Works in Progress', 'works-in-progress', pubs['in-prep']) >>
+\medskip
+
+\pdfbookmark[1]{Conference Presentations and Talks}{conference-presentations-talks}
+{\Large\textbf{Conference Presentations \& Talks}}
+
+\pdfbookmark[2]{Talks Presented by Steinmetz}{talks-presented-by-steinmetz}
+{\large\textbf{Talks Presented by Steinmetz, A.}}
+
+\begin{enumerate}[leftmargin=*,nosep]
+<% for t in talks.presented %>
+    \item << r.talk(t) >>
+<% endfor %>
+\end{enumerate}
+
+\pdfbookmark[2]{Talks Co-Prepared by Steinmetz}{talks-co-prepared-by-steinmetz}
+{\large\textbf{Talks Co-Prepared by Steinmetz, A. (Presented by Others)}}
+
+\begin{enumerate}[leftmargin=*,nosep]
+<% for t in talks.co_prepared %>
+    \item << r.talk(t) >>
+<% endfor %>
+\end{enumerate}
+
+\noindent In addition, I have closely collaborated on preparing research and academic talks delivered at the following conferences/institutes: <% for c in talks.collaborated %><< r.text(c) >><< ', ' if not loop.last >><% endfor %>.
+
+\medskip
+
+\pdfbookmark[1]{Grants and Awards}{grants-awards}
+{\Large\textbf{Grants \& Awards}}
+
+\begin{itemize}[leftmargin=*,nosep]
+<% for a in awards %>
+    \item << r.award(a) >>
+<% endfor %>
+\end{itemize}
+
+\medskip
+
+\pdfbookmark[1]{Teaching Experience}{teaching-experience}
+{\Large\textbf{Teaching Experience}}
+
+\textbf{Key:} <% for k in profile.institution_key %><< k.key >> (<< r.text(k.short | default(k.name)) >>)<< ", " if not loop.last >><% endfor +%>
+
+<% macro course_table(g, first) %>
+\pdfbookmark[2]{Faculty Courses at << g.key | replace('/', ' and ') >>}{faculty-courses-<< g.id >>}
+\textbf{Faculty Courses at << g.key >> (as << g.role >>)<< r.fn('teaching-record') if first >>:}\\
+{\normalsize
+\begin{tabular}{@{}p{2.5cm} p{6.0cm} p{2.0cm} p{2.0cm} p{3.0cm}@{}}
+    \toprule
+    \textbf{Course \#} & \textbf{Title} & \textbf{Sections} & \textbf{Students} & \textbf{Semester} \\
+    \midrule
+<% for c in g.courses %>
+    << c.code >> & << r.text(c.title) >><< r.fn(c.footnotes) if c.footnotes is defined >> & << c.sections >> & << r.students(c) >> & << c.term >> \\
+<% endfor %>
+    \bottomrule
+\end{tabular}
+}
+<% endmacro %>
+
+<< course_table(teaching_groups.gt, true) >>
+<< course_table(teaching_groups['ua-act'], false) >>
+<< r.fnlist() >>
+
+\begin{itemize}[leftmargin=*,nosep]
+<% for gid in ['pcc', 'ua-ta'] %>
+<% set g = teaching_groups[gid] %>
+    \item \textbf{<< r.text(g.summary_heading) >>:} <% for label, yrs in r.teaching_summary(g) %><< label >> (<< yrs >>)<< ", " if not loop.last >><% endfor %>
+
+<% endfor %>
+\end{itemize}
+
+\medskip
+
+\pdfbookmark[1]{Academic Service and Associations}{academic-service-associations}
+{\Large\textbf{Academic Service \& Associations}}
+
+\pdfbookmark[2]{Institutional Committees and Appointments}{institutional-committees-appointments}
+{\large\textbf{Institutional Committees \& Appointments}}
+
+\begin{itemize}[leftmargin=*,nosep]
+<% for s in service.institutional %>
+    \item << r.service(s) >>
+<% endfor %>
+\end{itemize}
+
+\pdfbookmark[2]{Professional Service and Membership}{professional-service-membership}
+{\large\textbf{Professional Service \& Membership}}
+
+\begin{itemize}[leftmargin=*,nosep]
+<% for s in service.professional %>
+    \item << r.service(s) >>
+<% endfor %>
+    \item << r.reviewer(service.reviewer) >>
+\end{itemize}
+
+\pdfbookmark[2]{Laboratory Safety Certifications}{laboratory-safety-certifications}
+{\large\textbf{Laboratory Safety Certifications}}
+
+\begin{itemize}[leftmargin=*,nosep]
+<% for c in certifications %>
+    \item << r.text(c.name) >>, << c.unit >> (<< c.year >>)
+<% endfor %>
+\end{itemize}
+
+\pdfbookmark[2]{Public Outreach}{public-outreach}
+{\large\textbf{Public Outreach}}
+
+\begin{enumerate}[leftmargin=*,nosep]
+<% for o in outreach %>
+    \item << r.outreach(o) >>
+<% endfor %>
+\end{enumerate}
+
+\medskip
+
+\pdfbookmark[1]{External and Institutional Press}{external-institutional-press}
+{\Large\textbf{External \& Institutional Press}}
+
+\begin{enumerate}[leftmargin=*,nosep]
+<% for p in press %>
+    \item << r.press(p) >>
+<% endfor %>
+\end{enumerate}
+
+\end{document}
