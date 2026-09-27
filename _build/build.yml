@@ -1,0 +1,7 @@
+# Outputs rendered into this repo by data-ajsteinmetz/build.py (see that repo's README).
+public: true
+
+outputs:
+  - template: cv.tex
+    output: cv_ajsteinmetz.tex
+    compile: pdflatex
