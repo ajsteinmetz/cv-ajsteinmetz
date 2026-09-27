@@ -256,15 +256,24 @@ class Renderer:
             return f"In preparation ({y})"
         if t in ("report", "dissertation"):
             return f"{self.text(p['venue'])}, {y}"
+        if p.get("status"):
+            return self.pub_status(p)
         venue = self.it(p["venue"])
-        if p.get("status") == "submitted":
-            return f"Submitted to {venue} ({y})"
         loc = self.esc(p.get("pages") or p.get("article") or "")
         if p.get("volume") is not None:
             return f"{venue} {p['volume']}, {loc} ({y})"
         if p.get("pages"):
             return f"{venue}, pp.{self.nbsp()}{loc} ({y})"
         return f"{venue} ({y})"
+
+    def pub_status(self, p):
+        """Unpublished venue: 'Submitted to *Particles* (2026)' or '*Particles*, in press (2026)'."""
+        venue, y, s = self.it(p["venue"]), p["year"], p["status"]
+        if s == "submitted":
+            return f"Submitted to {venue} ({y})"
+        if s == "in-press":
+            return f"{venue}, in press ({y})"
+        raise ValueError(f"{p['id']}: unknown status {s!r}")
 
     def cite(self, p):
         head = self.authors(p["authors"], coauthor=p.get("coauthor"))
@@ -276,8 +285,8 @@ class Renderer:
         """Venue only, for the README list: '*Phys. Rev. D* (2023)'."""
         if p["type"] == "dissertation":
             return f"Ph.D. dissertation ({p['year']})"
-        if p.get("status") == "submitted":
-            return f"Submitted to {self.it(p['venue'])} ({p['year']})"
+        if p.get("status"):
+            return self.pub_status(p)
         return f"{self.it(p['venue'])} ({p['year']})"
 
     def badge_doi(self, p):

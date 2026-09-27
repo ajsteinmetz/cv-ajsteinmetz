@@ -2,7 +2,7 @@
 #
 # type:     journal | chapter (book chapters & review articles) | report | in-prep | dissertation
 # authors:  semicolon-separated; "Steinmetz, A." is bolded automatically
-# status:   submitted (renders "Submitted to *venue*")
+# status:   submitted (renders "Submitted to *venue*") | in-press (renders "*venue*, in press")
 # volume + pages|article -> "*Venue* 234, 2919–2929 (2025)"; pages without volume -> "*Venue*, pp. 269–284 (2024)"
 # report/dissertation: venue is free text printed before the year
 # Identifiers (all optional, printed in this order): doi, hdl, url, arxiv, repo
@@ -11,11 +11,11 @@
 # Inline markup: *italic*
 
 - id: fusion-insights
-  type: chapter
+  type: journal
   authors: Rafelski, J.; Steinmetz, A.
   title: "Science of Nuclear Fusion: Insights and Ideas"
   venue: Particles
-  status: submitted
+  status: in-press
   year: 2026
   arxiv: "2609.01366"
   repo: fusion-insights
