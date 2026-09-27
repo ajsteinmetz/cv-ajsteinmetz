@@ -168,7 +168,7 @@ Citations = << profile.metrics.citations >>; h-index = << profile.metrics.h_inde
 {\Large\textbf{Grants \& Awards}}
 
 \begin{itemize}[leftmargin=*,nosep]
-<% for a in awards %>
+<% for a in awards_all %>
     \item << r.award(a) >>
 <% endfor %>
 \end{itemize}
