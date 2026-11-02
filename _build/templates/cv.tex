@@ -107,8 +107,7 @@
 
 \textbf{Title:} << r.text(diss.title) >>\\[0.3em]
 \textbf{Committee:} <% for c in diss.committee %>Prof.~<< r.esc(c.name) >>~(<< c.role >>)<< ", " if not loop.last >><% endfor %>\\[0.3em]
-\textbf{Identifiers:} << r.pub_ids(diss) | join(', ') >>\\[0.3em]
-\textbf{Presentation:} << r.ident(diss.presentation_doi, 'https://doi.org/' ~ diss.presentation_doi) >>
+\textbf{Identifiers:} << r.pub_ids(diss) | join(', ') >>
 
 \noindent\rule{\linewidth}{1.0pt}
 
